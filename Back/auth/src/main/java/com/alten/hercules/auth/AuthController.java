@@ -5,6 +5,7 @@ import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,65 +13,70 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.alten.hercules.auth.service.TokenManager;
+
+@CrossOrigin(origins="*")
 @RestController
 public class AuthController {
 	
 	@Autowired
-	private AccountDAO dao;
+	private AppUserDAO dao;
 	
-	 @PostMapping("/auth")
-	 public ResponseEntity<?> authentication(@RequestBody Account account) {
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody AppUser user) {
 		 
-		 dao.findByEmailAndPassword(account.getEmail(), account.getPassword());
-		 //
-		 return new ResponseEntity<>(HttpStatus.OK);
+		if (!dao.existsByEmailAndPassword(user.getEmail(), user.getPassword()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		 
+		//Génération du token
+		return ResponseEntity.ok().build();
 	 }
 
-	 @PostMapping("/auth/accounts")
-	 public ResponseEntity<?> addAccount(@RequestBody Account account) {
+	 @PostMapping("/auth/users")
+	 public ResponseEntity<?> addUser(@RequestBody AppUser user) {
 		 
-		 if (!accountIsValid(account))
+		 if (!userIsValid(user))
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		 
-		 if (dao.findByEmail(account.getEmail()) != null)
+		 if (dao.findByEmail(user.getEmail()) != null)
 		 	return new ResponseEntity<>(HttpStatus.CONFLICT);
 		 
-		 dao.save(account);
+		 dao.save(user);
 		 
 		 URI location = ServletUriComponentsBuilder.fromCurrentRequest()
 	        .path("/{id}")
-	        .buildAndExpand(account.getEmail())
+	        .buildAndExpand(user.getEmail())
 	        .toUri();
 		 
 		 return ResponseEntity.created(location).build();
 	 }
 	 
-	 @PutMapping("/auth/accounts")
-	 public ResponseEntity<?> updateAccount(@RequestBody Account account) {
+	 @PutMapping("/auth/users")
+	 public ResponseEntity<?> updateUser(@RequestBody AppUser user) {
 		 
-		 if (!accountIsValid(account))
+		 if (!userIsValid(user))
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		 
-		 if (dao.findByEmail(account.getEmail()) == null)
+		 if (dao.findByEmail(user.getEmail()) == null)
 			 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		 
-		 dao.save(account);
+		 dao.save(user);
 		 return new ResponseEntity<>(HttpStatus.CREATED);
 	 }
 	 
-	 @DeleteMapping("/auth/accounts")
-	 public ResponseEntity<?> deleteAccount(@RequestBody Account account) {
+	 @DeleteMapping("/auth/users")
+	 public ResponseEntity<?> deleteUser(@RequestBody AppUser user) {
 		 
-		 if (dao.findByEmail(account.getEmail()) == null)
+		 if (dao.findByEmail(user.getEmail()) == null)
 			 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		 
-		 dao.delete(account);
+		 dao.delete(user);
 		 return new ResponseEntity<>(HttpStatus.OK);
 	 }
 	 
-	 private boolean accountIsValid(Account account) {
-			boolean emailIsValid = !(account.getEmail() == null || account.getEmail().isBlank());
-			boolean passwordIsValid = !(account.getPassword() == null || account.getPassword().isBlank());
+	 private boolean userIsValid(AppUser user) {
+			boolean emailIsValid = !(user.getEmail() == null || user.getEmail().isBlank());
+			boolean passwordIsValid = !(user.getPassword() == null || user.getPassword().isBlank());
 			
 			return emailIsValid && passwordIsValid;
 		}

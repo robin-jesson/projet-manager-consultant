@@ -20,21 +20,21 @@ public class AuthControllerTest {
     AuthController authController;
      
     @Mock
-    AccountDAO dao;
+    AppUserDAO dao;
 	
 	@Test
 	void testAddAccountOK() {
 		
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        Account account = new Account("test.test@alten.com", "azerty");
+        AppUser user = new AppUser("test.test@alten.com", "azerty");
         
-        when(dao.findByEmail(account.getEmail())).thenReturn(null);
+        when(dao.findByEmail(user.getEmail())).thenReturn(null);
          
-        ResponseEntity<?> responseEntity = authController.addAccount(account);
+        ResponseEntity<?> responseEntity = authController.addUser(user);
          
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/" + account.getEmail());
+        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/" + user.getEmail());
         
 	}
 	
@@ -43,14 +43,14 @@ public class AuthControllerTest {
 		
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        Account account = new Account("test.test@alten.com", "");
+        AppUser user = new AppUser("test.test@alten.com", "");
         
-        ResponseEntity<?> responseEntity = authController.addAccount(account);
+        ResponseEntity<?> responseEntity = authController.addUser(user);
          
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         
-        account = new Account("", "azerty");
-        responseEntity = authController.addAccount(account);
+        user = new AppUser("", "azerty");
+        responseEntity = authController.addUser(user);
         
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
@@ -60,11 +60,11 @@ public class AuthControllerTest {
 		
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        Account account = new Account("test.test@alten.com", "azerty");
+        AppUser user = new AppUser("test.test@alten.com", "azerty");
         
-        when(dao.findByEmail(account.getEmail())).thenReturn(new Account());
+        when(dao.findByEmail(user.getEmail())).thenReturn(new AppUser());
         
-        ResponseEntity<?> responseEntity = authController.addAccount(account);
+        ResponseEntity<?> responseEntity = authController.addUser(user);
          
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
 	}
@@ -74,11 +74,11 @@ public class AuthControllerTest {
 		
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        Account account = new Account("test.test@alten.com", "azerty");
+        AppUser user = new AppUser("test.test@alten.com", "azerty");
          
-        when(dao.findByEmail(account.getEmail())).thenReturn(new Account());
+        when(dao.findByEmail(user.getEmail())).thenReturn(new AppUser());
          
-        ResponseEntity<?> responseEntity = authController.updateAccount(account);
+        ResponseEntity<?> responseEntity = authController.updateUser(user);
          
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 	}
@@ -88,14 +88,14 @@ public class AuthControllerTest {
 		
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        Account account = new Account("test.test@alten.com", "");
+        AppUser user = new AppUser("test.test@alten.com", "");
         
-        ResponseEntity<?> responseEntity = authController.updateAccount(account);
+        ResponseEntity<?> responseEntity = authController.updateUser(user);
          
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         
-        account = new Account("", "azerty");
-        responseEntity = authController.updateAccount(account);
+        user = new AppUser("", "azerty");
+        responseEntity = authController.updateUser(user);
         
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
@@ -105,11 +105,11 @@ public class AuthControllerTest {
 		
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        Account account = new Account("test.test@alten.com", "azerty");
+        AppUser user = new AppUser("test.test@alten.com", "azerty");
         
-        when(dao.findByEmail(account.getEmail())).thenReturn(null);
+        when(dao.findByEmail(user.getEmail())).thenReturn(null);
         
-        ResponseEntity<?> responseEntity = authController.updateAccount(account);
+        ResponseEntity<?> responseEntity = authController.updateUser(user);
          
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
@@ -119,11 +119,11 @@ public class AuthControllerTest {
 		
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        Account account = new Account("test.test@alten.com", "azerty");
+        AppUser user = new AppUser("test.test@alten.com", "azerty");
          
-        when(dao.findByEmail(account.getEmail())).thenReturn(new Account());
+        when(dao.findByEmail(user.getEmail())).thenReturn(new AppUser());
          
-        ResponseEntity<?> responseEntity = authController.deleteAccount(account);
+        ResponseEntity<?> responseEntity = authController.deleteUser(user);
          
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
@@ -133,11 +133,11 @@ public class AuthControllerTest {
 		
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        Account account = new Account("test.test@alten.com", "azerty");
+        AppUser user = new AppUser("test.test@alten.com", "azerty");
         
-        when(dao.findByEmail(account.getEmail())).thenReturn(null);
+        when(dao.findByEmail(user.getEmail())).thenReturn(null);
         
-        ResponseEntity<?> responseEntity = authController.deleteAccount(account);
+        ResponseEntity<?> responseEntity = authController.deleteUser(user);
          
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
