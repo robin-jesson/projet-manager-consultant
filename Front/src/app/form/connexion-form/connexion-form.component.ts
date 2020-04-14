@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
@@ -8,6 +8,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 })
 export class ConnexionFormComponent {
 
+  @Output() authentication = new EventEmitter<any>();
   formGrp : FormGroup;
   hidden : Boolean;
 
@@ -22,6 +23,7 @@ export class ConnexionFormComponent {
 
     console.log(this.formGrp.value['id']);
     console.log(this.formGrp.value['password']);
+    this.authentication.emit();
 
   }
 }

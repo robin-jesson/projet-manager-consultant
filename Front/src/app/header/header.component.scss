@@ -4,6 +4,12 @@ $usual-primary-blue: #043962;
 $usual-secondary-blue: #008BD2;
 $usual-tertiary-blue: #7ECBEE;
 
+.vr {
+	height: 100%;
+	width : 5px;
+	background: black;
+}
+
 a:hover {
     cursor: pointer;
 }
@@ -51,6 +57,11 @@ header nav ul {
 header nav ul li {
     float: left;
 }
+
+.border {
+    border-left: solid $usual-secondary-blue 2px;
+    border-right: solid $usual-secondary-blue 2px;
+}
   
 header nav ul li a {
     display: block;
@@ -58,16 +69,11 @@ header nav ul li a {
     text-decoration: none;
     font-size: 20px;
     font-style: normal;
-    padding-right: 16px;
-    margin-right: 16px;
+    padding: 0 16px;
 }
 
 header nav ul li a:hover {
     color: $usual-secondary-blue;
-}
-
-header nav ul li:nth-last-child(2) a {
-    border-right: solid $usual-secondary-blue 2px;
 }
 
 header .foot {

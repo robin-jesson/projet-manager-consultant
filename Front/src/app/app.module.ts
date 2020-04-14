@@ -1,3 +1,4 @@
+import { FooterComponent } from './footer/footer.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,6 +22,7 @@ import { ConnexionFormComponent } from './form/connexion-form/connexion-form.com
   declarations: [
     AppComponent,
     HeaderComponent,
+    FooterComponent,
     EmailFormFieldComponent,
     PasswordFormFieldComponent,
     ConnexionFormComponent

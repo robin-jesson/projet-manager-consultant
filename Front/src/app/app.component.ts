@@ -6,6 +6,16 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'Front';
+
+  title = 'HERCULES';
   isAuthenticated = false;
+
+  logIn(){
+    this.isAuthenticated = true;
+  }
+
+  logOut() {
+    this.isAuthenticated = false;
+  }
+
 }

@@ -1,1 +1,3 @@
-<app-connexion-form></app-connexion-form>
+<app-connexion-form *ngIf="!isAuthenticated" (authentication)="logIn()"></app-connexion-form>
+<app-header *ngIf="isAuthenticated" (logOut)="logOut()"></app-header>
+<app-footer *ngIf="isAuthenticated"></app-footer>
