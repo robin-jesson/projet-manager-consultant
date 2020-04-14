@@ -38,19 +38,29 @@ import io.jsonwebtoken.security.Keys;
  * 
  */
 public class TokenAuthService {
+	
+	//Generation d'une cle privee HS256
 	private Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 	
+	//Creation du token
 	public String createAuthToken(String role) {
+		
+		//expirationSession contient l'objet "date d'aujourd'hui + 4 heures"
 		Calendar expirationSession = Calendar.getInstance();
 		expirationSession.add(Calendar.HOUR, 4);
 		
+		
+		//HashMap de la payload
 		Map<String,Object> payload = new HashMap<String, Object>();
+		
+		//Ajout d'éléments dans la payload
 		payload.put("role", role);
 		payload.put("exp", expirationSession.getTime());
 		
 		return Jwts.builder().setClaims(payload).signWith(this.key).compact();
 	}
 	
+	//Lecture du token
 	public Claims readAuthToken(String token) {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 	}
