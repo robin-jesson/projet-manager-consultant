@@ -4,15 +4,15 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class AppAccount {
+public class Account {
 	
 	@Id 
 	private String email;
 	private String password;
 	
-	public AppAccount() {}
+	public Account() {}
 	
-	public AppAccount(String email, String password) {
+	public Account(String email, String password) {
 		this.email = email;
 		this.password = password;
 	}
