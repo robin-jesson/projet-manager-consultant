@@ -6,3 +6,12 @@ a, abbr, acronym, address, applet, article, aside, audio, b, big, blockquote, bo
     font: inherit;
     vertical-align: baseline;
 }
+
+.container {
+    padding: 0 30px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

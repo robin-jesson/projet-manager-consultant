@@ -1,0 +1,10 @@
+<mat-form-field [appearance]='appearance'>
+  <mat-label>Email</mat-label>
+  <input matInput type="email" (input)="onInput()" [formControl]="formCtrl"  [placeholder]="placeholder">
+  <mat-error *ngIf="formCtrl.hasError('pattern') && !formCtrl.hasError('required')">
+    Format invalide
+  </mat-error>
+  <mat-error *ngIf="formCtrl.hasError('required')">
+    L'e-mail est <strong>obligatoire</strong>
+  </mat-error>
+</mat-form-field>

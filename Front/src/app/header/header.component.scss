@@ -4,13 +4,6 @@ $usual-primary-blue: #043962;
 $usual-secondary-blue: #008BD2;
 $usual-tertiary-blue: #7ECBEE;
 
-.container {
-    padding: 0 30px;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
-}
-
 a:hover {
     cursor: pointer;
 }
@@ -94,7 +87,7 @@ header .user {
     overflow: hidden;
 }
 
-header .user i {
+header .user span {
     float: left;
     margin: 4px 10px 4px 0;
 }
