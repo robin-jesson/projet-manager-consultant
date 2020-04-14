@@ -1,4 +1,4 @@
-package com.alten.hercules.auth.service;
+package services;
 
 import java.security.Key;
 import java.util.Calendar;
@@ -9,6 +9,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+
+
+import io.jsonwebtoken.MissingClaimException;
+import io.jsonwebtoken.IncorrectClaimException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.InvalidKeyException;
+import io.jsonwebtoken.security.SignatureException;
+
 
 /*
  * 
@@ -38,30 +46,69 @@ import io.jsonwebtoken.security.Keys;
  * 
  */
 public class TokenAuthService {
-	
-	//Generation d'une cle privee HS256
 	private Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 	
-	//Creation du token
 	public String createAuthToken(String role) {
-		
-		//expirationSession contient l'objet "date d'aujourd'hui + 4 heures"
 		Calendar expirationSession = Calendar.getInstance();
 		expirationSession.add(Calendar.HOUR, 4);
 		
-		
-		//HashMap de la payload
 		Map<String,Object> payload = new HashMap<String, Object>();
-		
-		//Ajout d'éléments dans la payload
 		payload.put("role", role);
 		payload.put("exp", expirationSession.getTime());
 		
 		return Jwts.builder().setClaims(payload).signWith(this.key).compact();
 	}
 	
-	//Lecture du token
 	public Claims readAuthToken(String token) {
-		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+		
+
+		Claims c = null;
+		
+		try {
+			
+			c = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+			
+		}
+		
+		catch (InvalidKeyException e) {  
+			System.out.println("Key error. Error code : " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		//Verification de la validite de la signature
+		catch (SignatureException e) {  
+			System.out.println("Signature error. Error code : " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		//Verification de la presence du claim
+		catch (MissingClaimException e)
+		{
+			
+			System.out.println("Missing value in token. Error code : " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		//Verification de la validite du claim
+		catch (IncorrectClaimException e)
+		{
+			
+			System.out.println("Incorrect claim. Error code  : " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		
+		
+		//Verification 
+		catch (JwtException e)
+		{
+			
+			System.out.println("Generic token error. Error code  : " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		
+		
+		return c;
 	}
 }
