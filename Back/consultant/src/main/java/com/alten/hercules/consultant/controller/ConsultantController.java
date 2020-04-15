@@ -2,10 +2,12 @@ package com.alten.hercules.consultant.controller;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -89,7 +92,31 @@ public class ConsultantController {
 	}
 	
 	/**
-	 * Delete a consultant if possible (if the consultant has no missions), else is deactivated.
+	 * Set a consultant as deactivated.
+	 * @param date
+	 * @param consultant
+	 * @return
+	 */
+	@PutMapping("/deactivate")
+	public ResponseEntity<?> deactivate(@RequestParam(value = "date", required = false) Date date, 
+			@RequestBody Consultant consultant) { //ok postman (ok, not found)
+		
+		if(date==null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
+		if(this.consultantDao.findById(consultant.getId())==null)
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		
+		consultant.setDeactivationDate(date);
+		consultant.setEnabled(false);
+		
+		this.consultantDao.save(consultant);
+		
+		return ResponseEntity.ok().build();
+	}
+	
+	/**
+	 * Delete a consultant if possible (if the consultant has no missions)
 	 * 
 	 * NOT FOUND if consultant can't be found with the id
 	 * OK if updated
@@ -102,7 +129,9 @@ public class ConsultantController {
 		if (this.consultantDao.findById(consultant.getId()) == null)
 			 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		
+		//TODO: vérifier si nombre de mission == 0
 		this.consultantDao.delete(consultant);
+		
 		return ResponseEntity.ok().build();
 	}
 	
@@ -152,19 +181,19 @@ public class ConsultantController {
 	}
 	
 	/**
+	 * TODO array dans params
 	 * Search for consultants fitting the key words.
 	 * @param keys
 	 * @return
 	 */
 	@GetMapping("/search")
-	public List<Consultant> searchConsultant(List<String> keys){
+	public List<Consultant> searchConsultant(@RequestParam(name = "q") List<String> keys){
 		List<Consultant> consultants = new ArrayList<>();
 		for(String key : keys) {
 			consultants.addAll(this.consultantDao.findByLastnameOrFirstname(key));
 		}
 		return consultants;
 	}
-	
 	
 	
 	
