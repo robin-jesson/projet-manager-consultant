@@ -1,0 +1,122 @@
+package com.alten.hercules.auth.controller;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alten.hercules.auth.dao.RoleDAO;
+import com.alten.hercules.auth.dao.UserDAO;
+import com.alten.hercules.auth.model.ERole;
+import com.alten.hercules.auth.model.Role;
+import com.alten.hercules.auth.model.AppUser;
+import com.alten.hercules.auth.model.UserDetailsImpl;
+import com.alten.hercules.auth.model.request.LoginRequest;
+import com.alten.hercules.auth.model.request.RegisterRequest;
+import com.alten.hercules.auth.model.response.JwtResponse;
+import com.alten.hercules.auth.model.response.MsgResponse;
+import com.alten.hercules.auth.security.jwt.JwtUtils;
+
+@CrossOrigin(origins="*")
+@RestController
+@RequestMapping("/hercules/auth")
+public class UserController {
+	
+	@Autowired AuthenticationManager authManager;
+	
+	@Autowired RoleDAO roleDao;
+	@Autowired UserDAO userDao;
+	
+	@PostMapping("/signin")
+	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest request) {
+
+		Authentication authentication = authManager.authenticate(
+				new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+		
+
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		String jwt = JwtUtils.generateJwtToken(authentication);
+		
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
+		List<String> roles = userDetails.getAuthorities().stream()
+				.map(item -> item.getAuthority())
+				.collect(Collectors.toList());
+
+		JwtResponse response = new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), roles);
+		return ResponseEntity.ok(response);
+	}
+	
+	@PostMapping("/register")
+	public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterRequest request) {
+
+		if (userDao.existsByEmail(request.getEmail())) {
+			return ResponseEntity
+					.badRequest()
+					.body(new MsgResponse("Erreur : email déjà utilisé"));
+		}
+
+		AppUser user = new AppUser(request.getEmail(), request.getPassword(), request.getFirstname(), request.getLastname());
+
+		Set<String> strRoles = request.getRoles();
+		Set<Role> roles = new HashSet<>();
+		
+		for (String strRole : strRoles) {
+			ERole role = ERole.valueOf(strRole);
+			
+			if (role != null) {
+				try {
+					roles.add(roleDao.findByName(role)
+						.orElseThrow(() -> new RuntimeException("Erreur : role introuvable.")));
+				} catch (RuntimeException e) {
+					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+				}
+			} else {
+				return ResponseEntity
+						.badRequest()
+						.body(new MsgResponse("Erreur : '" + strRole + "' n'existe pas."));				
+			}
+		}
+
+		user.setRoles(roles);
+		userDao.save(user);
+
+		return ResponseEntity.ok(user);
+	}
+	 
+	 @PutMapping("/auth/users")
+	 public ResponseEntity<?> updateUser(@Valid @RequestBody AppUser user) {
+		 
+		 if (userDao.findByEmail(user.getEmail()) == null)
+			 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		 
+		 userDao.save(user);
+		 return new ResponseEntity<>(HttpStatus.CREATED);
+	 }
+	 
+	 @DeleteMapping("/auth/users")
+	 public ResponseEntity<?> deleteUser(@Valid @RequestBody AppUser user) {
+		 
+		 if (userDao.findByEmail(user.getEmail()) == null)
+			 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		 
+		 userDao.delete(user);
+		 return new ResponseEntity<>(HttpStatus.OK);
+	 }
+}
