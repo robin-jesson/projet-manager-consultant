@@ -183,6 +183,7 @@ public class ConsultantController {
 	
 	/**
 	 * Search for consultants fitting the key words.
+	 * (ex: /search?q=name1&q=name2)
 	 * @param keys
 	 * @return
 	 */
