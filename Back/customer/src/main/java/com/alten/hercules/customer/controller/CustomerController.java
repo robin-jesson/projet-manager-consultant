@@ -1,6 +1,8 @@
 package com.alten.hercules.customer.controller;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alten.hercules.customer.dao.CustomerDAO;
@@ -41,24 +44,36 @@ public class CustomerController {
 	
 	
 	@GetMapping("/customers/{customer_id}")
-	public ResponseEntity<?> getCustomerById(@Valid @RequestBody Long customer_id)
+	public ResponseEntity<Optional<Customer>> getCustomerById(@PathVariable(value = "customer_id") Long customer_id)
     {
-		
+    	
 		Optional<Customer> customer = customerDAO.findById(customer_id);
 		
-		if (customer_id == null)
+		if(customer_id == null || this.customerDAO.findById(customer_id)==null)
 		{
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
+		else
+		{
 		return ResponseEntity.ok().body(customer);	
-		
+		}
     }
 	
 	
 	
 	@PostMapping("/customers")
-    public ResponseEntity<?> createCustomer(@Valid @RequestBody Customer customer) {
+    public ResponseEntity<?> createCustomer(@Valid @RequestBody Customer customer) { //OK pour toutes les conditions
+		
+		if(customer.getName()==null || customer.getName().isEmpty())
+		{
+			return ResponseEntity.noContent().build();
+		}
+		
+		if(this.customerDAO.findByName(customer.getName())!=null)
+		{
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
+		}
 		
 		customerDAO.save(customer);
 		return new ResponseEntity<>(HttpStatus.CREATED);
@@ -66,12 +81,17 @@ public class CustomerController {
 	
 	
 	@PutMapping("/customers")
-    public ResponseEntity<?> updateCustomer(@Valid @RequestBody Customer customer) {
+    public ResponseEntity<?> updateCustomer(@Valid @RequestBody Customer customer) { 
 		
-		if (customerDAO.findById(customer.getCustomer_id()) == null)
+		if (this.customerDAO.findById(customer.getCustomer_id()) == null)
 		 {
 			 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		 }
+		
+		if(customer.getName()==null || customer.getName().isEmpty())
+		{
+			return ResponseEntity.noContent().build();
+		}
 		 
 		 customerDAO.save(customer);
 		 return new ResponseEntity<>(HttpStatus.OK);
@@ -93,20 +113,19 @@ public class CustomerController {
 	 }
 	
 	
-	@GetMapping("/customers/key")
-	public ResponseEntity<Optional<Customer>> getCustomerByNameOrActivitySector(@PathVariable(value = "name") String name,@PathVariable(value = "activitysector") String activitysector)
-	{
-		
-		
-		Optional<Customer> customer = customerDAO.findByNameOrActivitysector(name,activitysector);
-		
-		 if (customerDAO.existsByNameOrActivitysector(name,activitysector) == false)
-		 {
-			 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		 }
-		 
-		 return ResponseEntity.ok().body(customer);
-		
+	
+	@GetMapping("customers/search")
+	public List<Customer> searchCustomer(@RequestParam(name = "q") List<String> keys){
+		List<Customer> customers = new ArrayList<>();
+		for(String key : keys) {
+			customers.addAll(this.customerDAO.findByNameOrActivitysector(key));
+		}
+		List<Customer> listRes = new ArrayList<>(new HashSet<>(customers));
+		return listRes;
 	}
+	
+	
+	  
+	 
 	
 }
