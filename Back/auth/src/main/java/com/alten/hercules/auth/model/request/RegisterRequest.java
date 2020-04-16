@@ -24,9 +24,12 @@ public class RegisterRequest {
 	
 	private Set<String> roles;
 
-	RegisterRequest(String email, String password) {
+	public RegisterRequest(String email, String password, String firstname, String lastname, Set<String> roles) {
 		this.email = email;
 		this.password = password;
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.roles = roles;
 	}
 	
 	public void setEmail(String email) { this.email = email; }
