@@ -23,3 +23,8 @@
 hs_err_pid*
 Back/auth/bin
 Back/auth/mvnw
+
+Back/.metadata/*
+Back/skill/*
+Back/consultant/*
+Back/project/*
