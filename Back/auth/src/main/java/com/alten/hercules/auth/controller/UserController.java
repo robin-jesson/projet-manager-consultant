@@ -54,12 +54,12 @@ public class UserController {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = JwtUtils.generateJwtToken(authentication);
 		
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
-		List<String> roles = userDetails.getAuthorities().stream()
+		UserDetailsImpl details = (UserDetailsImpl) authentication.getPrincipal();		
+		List<String> roles = details.getAuthorities().stream()
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 
-		JwtResponse response = new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), roles);
+		JwtResponse response = new JwtResponse(jwt, details.getId(), details.getUsername(), details.getFirstname(), details.getLastname(), roles);
 		return ResponseEntity.ok(response);
 	}
 	
@@ -72,29 +72,26 @@ public class UserController {
 					.body(new MsgResponse("Erreur : email déjà utilisé"));
 		}
 
-		AppUser user = new AppUser(request.getEmail(), request.getPassword(), request.getFirstname(), request.getLastname());
-
 		Set<String> strRoles = request.getRoles();
 		Set<Role> roles = new HashSet<>();
 		
 		for (String strRole : strRoles) {
-			ERole role = ERole.valueOf(strRole);
-			
-			if (role != null) {
+			try {
+				ERole role = ERole.valueOf(strRole);
 				try {
 					roles.add(roleDao.findByName(role)
 						.orElseThrow(() -> new RuntimeException("Erreur : role introuvable.")));
 				} catch (RuntimeException e) {
 					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 				}
-			} else {
+			} catch (IllegalArgumentException e) {
 				return ResponseEntity
 						.badRequest()
-						.body(new MsgResponse("Erreur : '" + strRole + "' n'existe pas."));				
+						.body(new MsgResponse("Erreur : Le rôle '" + strRole + "' n'existe pas."));				
 			}
 		}
 
-		user.setRoles(roles);
+		AppUser user = new AppUser(request.getEmail(), request.getPassword(), request.getFirstname(), request.getLastname(), roles);
 		userDao.save(user);
 
 		return ResponseEntity.ok(user);
