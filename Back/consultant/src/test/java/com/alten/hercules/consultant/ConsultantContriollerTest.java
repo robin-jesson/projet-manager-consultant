@@ -133,12 +133,12 @@ class ConsultantContriollerTest {
 	
 	//@Test
 	void testDeleteConsultantNotFound() {
-		
+		//TODO
 	}
 	
 	//@Test
 	void testDeleteConsultantOk() {
-		
+		//TODO
 	}
 
 	/* GET ALL */
@@ -217,7 +217,8 @@ class ConsultantContriollerTest {
 		when(dao.findById(1)).thenReturn(c1);
 		
 		ResponseEntity<Integer> responseEntity =  controller.getManagerOfConsultant(1);
-		assertEquals(c1.getIdManager(), responseEntity.getBody());
+		System.out.println(responseEntity);
+		assertEquals(c1.getIdManager(), responseEntity.getBody()); //TODO
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 	}
 	
