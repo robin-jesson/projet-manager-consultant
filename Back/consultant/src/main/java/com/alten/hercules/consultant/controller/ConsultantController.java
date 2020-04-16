@@ -3,6 +3,7 @@ package com.alten.hercules.consultant.controller;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -181,7 +182,6 @@ public class ConsultantController {
 	}
 	
 	/**
-	 * TODO array dans params
 	 * Search for consultants fitting the key words.
 	 * @param keys
 	 * @return
@@ -192,7 +192,8 @@ public class ConsultantController {
 		for(String key : keys) {
 			consultants.addAll(this.consultantDao.findByLastnameOrFirstname(key));
 		}
-		return consultants;
+		List<Consultant> listRes = new ArrayList<>(new HashSet<>(consultants));
+		return listRes;
 	}
 	
 	
