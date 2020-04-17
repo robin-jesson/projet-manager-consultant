@@ -6,6 +6,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
+
+
+
 @Entity
 @Table(name = "customer")
 public class Customer {
@@ -21,6 +25,7 @@ public class Customer {
 	
 	private String name;
 	
+	private byte[] logo;
 	
 
 	public Customer() {
@@ -28,29 +33,25 @@ public class Customer {
 	}
 
 
-	public Customer(long customer_id, String activitysector, String description, String name) {
+	public Customer(long customer_id, String activitysector, String description, String name, byte[] logo) {
 		super();
 		this.customer_id = customer_id;
 		this.activitysector = activitysector;
 		this.description = description;
 		this.name = name;
+		this.logo = logo;
 	}
 
 	
+	
+
+
 	public long getCustomer_id() {
 		return customer_id;
 	}
 
 	public void setCustomer_id(long customer_id) {
 		this.customer_id = customer_id;
-	}
-
-	public String getActivity_sector() {
-		return activitysector;
-	}
-
-	public void setActivity_sector(String activitysector) {
-		this.activitysector = activitysector;
 	}
 
 	
@@ -67,10 +68,27 @@ public class Customer {
 		return name;
 	}
 
+	public String getActivitysector() {
+		return activitysector;
+	}
+
+
+	public void setActivitysector(String activitysector) {
+		this.activitysector = activitysector;
+	}
+
+
 	public void setName(String name) {
 		this.name = name;
 	}
 	
-	
+	public byte[] getLogo() {
+		return logo;
+	}
+
+
+	public void setLogo(byte[] logo) {
+		this.logo = logo;
+	}
 	
 }

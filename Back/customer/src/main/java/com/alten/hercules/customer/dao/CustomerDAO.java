@@ -1,5 +1,5 @@
 package com.alten.hercules.customer.dao;
-import java.util.Collection;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +21,7 @@ public interface CustomerDAO extends JpaRepository<Customer, Long> {
 	List<Customer> findByNameOrActivitysector(String key);
 	
 	
-	boolean existsByNameOrActivitysector(String name, String activity_sector);
+	boolean existsByNameOrActivitysector(String name, String activity_sector); //dans la version finale, à remplacer par activitysector
 	boolean existsByName(String name);
 
 }
