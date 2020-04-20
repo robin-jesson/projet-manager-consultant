@@ -21,7 +21,7 @@ public interface CustomerDAO extends JpaRepository<Customer, Long> {
 	List<Customer> findByNameOrActivitysector(String key);
 	
 	
-	boolean existsByNameOrActivitysector(String name, String activity_sector); //dans la version finale, à remplacer par activitysector
+	boolean existsByNameOrActivitysector(String name, String activitysector); 
 	boolean existsByName(String name);
 
 }
